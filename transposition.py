@@ -1,23 +1,32 @@
 import math
 
 
-def matrix_generator(key, pt):
+def matrix_generator(key, pt, encrypt):
     no_of_rows = math.ceil(len(pt)/len(key))
     matrix = [["" for i in range(len(key))] for j in range(no_of_rows)]
-    pt = pt.replace(" ", "_")
+    if(encrypt):
+        pt = pt.replace(" ", "_")
+        no_of_elements = sum(len(row) for row in matrix)
+        if len(pt)<no_of_elements:
+            pt = pt + ("_")*(no_of_elements-len(pt))
 
-    no_of_elements = sum(len(row) for row in matrix)
-    if len(pt)<no_of_elements:
-        pt = pt + ("_")*(no_of_elements-len(pt))
-
-    row,col = 0,0
-    for i in pt:
-        matrix[row][col] = i
-        if col == len(matrix[0])-1 and row < len(matrix):
-            row +=1 
-            col = 0
-        else:
-            col += 1
+        row,col = 0,0
+        for i in pt:
+            matrix[row][col] = i
+            if col == len(matrix[0])-1 and row < len(matrix):
+                row +=1 
+                col = 0
+            else:
+                col += 1
+    else:
+        row, col = 0,0
+        for i in pt:
+            matrix[row][col] = i
+            if row == len(matrix)-1 and col < len(matrix[0]):
+                col +=1
+                row = 0
+            else:
+                row += 1
     
     return matrix
 
@@ -30,13 +39,13 @@ def print_matrix(matrix):
 
 
 def encrypt(matrix, key):
-    key_list = sorted(list(key))  #[A, C, H, K]
+    key_list = sorted(list(key))  
     # print(list(key))
-    ans = ""
     
-    ind = [key_list.index(letter) for letter in key]  # [2, 0, 1, 3]
+    ind = [key_list.index(letter) for letter in key]  
     # print(ind)
     
+    ans = ""
     for i in range(len(ind)):
         j = ind.index(i)
         row = 0
@@ -48,45 +57,46 @@ def encrypt(matrix, key):
 
 
 def decrypt(encrypted_message, key):
-    matrix = matrix_generator(key, encrypted_message)
-    matrix = transpose(matrix)
-    key_list = sorted(list(key)) 
-    # print(key_list)
-    ind = [key_list.index(letter) for letter in key]  # [2, 0, 1, 3]
-    ans = ""
-    # print(ind)
-    row = 0
+    matrix = matrix_generator(key, encrypted_message, False)
+    print("Initial Matrix of Encrypted text:")
+    print_matrix(matrix)
 
-    while(row<len(matrix)):
-        for i in ind:
-            ans += matrix[row][i]
-        row += 1
-        
+    key_list = sorted(list(key)) 
+    print(key_list)
+
+    ind = [key_list.index(letter) for letter in key]  
+    print(ind)
+
+    matrix2 = [["_" for _ in range(len(matrix[0]))] for _ in range(len(matrix))]
+
+    print("Final Matrix of Encrypted text:")
+    col = 0
+    for i in range(len(ind)): 
+        j = ind.index(i)    
+        x = 0               
+        row = 0
+        while(x < len(matrix)):
+            matrix2[x][j] = matrix[row][col] 
+            x += 1
+            row += 1
+        col += 1
+
+    print_matrix(matrix2)
+    
+    ans = ""
+    for row in range(len(matrix2)):
+        for col in range(len(matrix[row])):
+            ans += matrix2[row][col]
+    
+    ans = ans.replace("_", " ")
     return ans
 
 
-def transpose(matrix):
-    transpose = [["" for _ in range(len(matrix))] for i in range(len(matrix[0]))]
-    row, col = 0,0
-    for row in range(len(matrix[0])):
-        for col in range(len(matrix)):
-            transpose[row][col] = matrix[col][row]
-            if col == len(transpose[0])-1 and row < len(transpose):
-                col = 0
-                row += 1
-            else:
-                col += 1
-    print("Transpose Matrix of encrypted message:")
-    print_matrix(transpose)
-
-    return transpose
-
-
-key = "HACK"
-plaintext = "Geeks for Geeks"
+key = "MEOWS"
+plaintext = "Hello Im Isha"
 print("Plaintext is:", plaintext)
 
-matrix = matrix_generator(key, plaintext)
+matrix = matrix_generator(key, plaintext, True)
 print_matrix(matrix)
 
 encrypted_message = encrypt(matrix, key)
