@@ -1,0 +1,31 @@
+D:
+cd Sem 6
+cd IS
+mkdir RSA_Expt02
+cd RSA_Expt02
+mkdir alice
+mkdir bob
+cd alice
+openssl genrsa -aes-256-cbc -out alice_private.key 4096
+openssl rsa -in alice_private.key -pubout > alice_public.key
+dir
+cp alice_public.key ../bob/
+copy alice_public.key ../bob
+copy alice_public.key ../bob/
+copy alice_public.key ..\bob\
+dir
+echo Hello, this is the PlainText >message.txt
+dir
+openssl rsautl --encrypt -inkey bob_public.key -pubin -in message.txt -out encryptedMessage.enc
+openssl pkeyutl -encrypt -pubin -inkey bob_public.key -in message.txt -out encryptedMessage.enc
+dir
+cat encryptedMessage.enc
+type encryptedMessage.enc
+copy encryptedMessage.enc ..\bob\
+openssl dgst-sha256 -sign alice_private.key -outsigner encryptedMessage.enc
+openssl dgst -sha256 -sign alice_private.key -outsigner encryptedMessage.enc
+openssl dgst -sha256 -sign alice_private.key -out signer encryptedMessage.enc
+openssl base64 -in signer -out alice_signature
+dir
+copy alice_signature ..\bob
+doskey /history > alice_history.txt

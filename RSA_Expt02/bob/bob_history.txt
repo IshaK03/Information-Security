@@ -1,0 +1,16 @@
+d:
+cd Sem 6/IS/RSA_Expt02
+cd bob
+openssl genrsa -des3 -out bob_private.key 4096
+openssl rsa -in bob_private.key -pubout > bob_public.key
+dir
+copy bob_public.key ..\alice\
+dir
+openssl pkeyutl -decrypt -inkey bob_private.key -in encryptedMessage.enc -out decryptedMessage.txt
+dir
+type decryptedMessage.txt
+dir
+openssl base64 -d -in alice_signature -out signer
+openssl dgst -sha256 -verify alice_public.key -signature signer encryptedMessage.enc
+type decryptedMessage.txt
+doskey /history > bob_history.txt
